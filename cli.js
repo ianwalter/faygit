@@ -2,11 +2,11 @@
 
 const cli = require('@ianwalter/cli')
 const { print } = require('@ianwalter/print')
-const faygit = require('.')
+const { generateData } = require('.')
 
 async function run () {
   const { _: [dir], $package, ...config  } = cli({ name: 'faygit' })
-  const data = faygit({ dir, ...config })
+  const data = generateData({ dir, ...config })
   print.success(`Created a git repository at ${data.dir}`, data)
 }
 

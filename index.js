@@ -11,7 +11,7 @@ const getRandomInt = (max, min = 1) => Math.floor(
 )
 
 const generateFile = () => {
-  const heading = fake.random.words()
+  const heading = faker.random.words()
   const numberOfParagraphs = getRandomInt(5)
   const paragraphs = []
 
@@ -23,7 +23,7 @@ const generateFile = () => {
   }
 
   return {
-    filename: `${fake.random.word()}.html`,
+    filename: `${faker.random.word()}.html`,
     source: html`
       <html>
         <head>
@@ -56,14 +56,14 @@ const generateFile = () => {
 const modifyFile = file => {
   const $ = cheerio.load(file.source)
   const paragraphs = $('p')
-  const index = paragraphs(paragraphs.length) - 1
-  paragraphs[index].text(fake.lorem.paragraph())
+  const index = getRandomInt(paragraphs.length) - 1
+  paragraphs[index].text(faker.lorem.paragraph())
   file.source = $.html()
 }
 
 const generateData = config => {
   const data = {
-    committers: [],
+    authors: [],
     commits: [],
     files: [],
     numberOfAuthors: getRandomInt(9),
@@ -94,6 +94,7 @@ const generateData = config => {
       for (let n = 0; n < numberOfFilesToModify; n++) {
         filesToModify.add(getRandomInt(10))
       }
+      console.log(filesToModify)
       filesToModify.forEach(file => {
         data.files[file] = modifyFile(data.files[file])
       })
@@ -110,15 +111,17 @@ const generateData = config => {
   return data
 }
 
-const generateRepo = config => {
+const generateRepo = async config => {
   const data = generateData(config)
 
-  data.commits.forEach(commit => {
+  data.commits.forEach(async commit => {
     commit.files.forEach(file => {
       fs.writeFile(file.filename, file.source)
     })
 
-    execa
+    await execa('git', ['add', '.'])
+
+    await execa('echo', [])
   })
 
   return data
