@@ -6,12 +6,11 @@ const { oneLine } = require('common-tags')
 const { generateRepo } = require('.')
 
 async function run () {
-  const { _: [dir], $package, ...config  } = cli({ name: 'faygit' })
+  const { _: [dir], $package, ...config } = cli({ name: 'faygit' })
   const { numberOfCommits } = await generateRepo({ dir, ...config })
   print.success(oneLine`
-    Added ${numberOfCommits} commit${numberOfCommits > 1 ? 's' : '' }!
+    Added ${numberOfCommits} commit${numberOfCommits > 1 ? 's' : ''}!
   `)
 }
 
 run().catch(err => print.error(err))
-

@@ -9,6 +9,8 @@
   },
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
+    "test": "bff",
     "faygit": "./cli.js"
   },
   "files": [
@@ -23,6 +25,14 @@
     "url": "https://github.com/ianwalter/faygit/issues"
   },
   "homepage": "https://github.com/ianwalter/faygit#readme",
+  "keywords": [
+    "mock",
+    "fake",
+    "git",
+    "dummy",
+    "repository",
+    "commits"
+  ],
   "dependencies": {
     "@ianwalter/cli": "^1.2.0",
     "@ianwalter/print": "^3.0.1",

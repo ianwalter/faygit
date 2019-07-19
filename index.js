@@ -39,7 +39,7 @@ const generateFile = () => {
           <h1>${heading}</h1>
 
           ${paragraphs.reduce(
-            (acc, paragraph) => (acc += html`
+    (acc, paragraph) => (acc += html`
               <p>
 
                 <h2>${paragraph.heading}</h2>
@@ -49,8 +49,8 @@ const generateFile = () => {
               </p>
 
             `) && acc,
-            ''
-          )}
+    ''
+  )}
 
         </body>
       </html>
@@ -132,12 +132,11 @@ const generateRepo = async config => {
 
   // Generate the dummy commit data.
   const data = generateData(config)
-  print.debug('Data', { ...data, commits: '...', files: '...'  })
+  print.debug('Data', { ...data, commits: '...', files: '...' })
 
   // Make the directory if it doesn't exist and initialize the git repository.
   await execa('mkdir', ['-p', data.dir], { stdio })
   await execa('git', ['init'], { cwd: data.dir, stdio })
-
 
   for (const commit of data.commits) {
     // Write the files contained in the commit to the file system.
