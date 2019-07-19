@@ -4,18 +4,23 @@ const faker = require('faker')
 const { html } = require('common-tags')
 const cheerio = require('cheerio')
 const execa = require('execa')
+const { Print } = require('@ianwalter/print')
 
-const getRandomInt = (max, min = 1) => Math.floor(
-  Math.random() * Math.floor(max),
+const stdio = 'inherit'
+
+const getRandomInt = (max, min = 1) => Math.max(
+  Math.floor(Math.random() * Math.floor(max)),
   min
 )
 
+// Generate an HTML file.
 const generateFile = () => {
+  // Use some random words for the page title and h1.
   const heading = faker.random.words()
-  const numberOfParagraphs = getRandomInt(5)
-  const paragraphs = []
 
-  for (let i = 0; i < numberOfParagraphs; i++) {
+  // Generate the paragraphs that will go into the HTML body.
+  const paragraphs = []
+  for (let i = 0; i < getRandomInt(5); i++) {
     paragraphs.push({
       heading: faker.random.words(),
       body: faker.lorem.paragraph()
@@ -23,7 +28,7 @@ const generateFile = () => {
   }
 
   return {
-    filename: `${faker.random.word()}.html`,
+    filename: `${faker.random.word().replace(' ', '')}.html`,
     source: html`
       <html>
         <head>
@@ -53,14 +58,16 @@ const generateFile = () => {
   }
 }
 
+// Swap a random paragraph in a given file with a new randomly generated one.
 const modifyFile = file => {
   const $ = cheerio.load(file.source)
   const paragraphs = $('p')
   const index = getRandomInt(paragraphs.length) - 1
-  paragraphs[index].text(faker.lorem.paragraph())
-  file.source = $.html()
+  $(paragraphs[index]).text(faker.lorem.paragraph())
+  return { ...file, source: $.html() }
 }
 
+// Generate the dummy commit data for our dummy repository.
 const generateData = config => {
   const data = {
     authors: [],
@@ -73,6 +80,12 @@ const generateData = config => {
     dir: path.resolve(config.dir || '.')
   }
 
+  // Make sure there aren't more authors than there are commits.
+  data.numberOfAuthors = data.numberOfAuthors > data.numberOfCommits
+    ? data.numberOfCommits
+    : data.numberOfAuthors
+
+  // Generate the dummy commit authors.
   const numberOfAuthorsNeeded = data.numberOfAuthors - data.authors.length
   for (let i = 0; i < numberOfAuthorsNeeded; i++) {
     data.authors.push({
@@ -81,20 +94,22 @@ const generateData = config => {
     })
   }
 
+  // Generate the dummy commits.
   const numberOfCommitsNeeded = data.numberOfCommits - data.commits.length
   for (let i = 0; i < numberOfCommitsNeeded; i++) {
     if (data.files.length < data.numberOfFiles) {
+      // Generate new files to be added to the repository.
       const numberOfFiles = getRandomInt(2)
       for (let n = 0; n < numberOfFiles; n++) {
         data.files.push(generateFile())
       }
     } else {
-      const numberOfFilesToModify = getRandomInt(10)
+      // Modify existing files in the repository.
+      const numberOfFilesToModify = getRandomInt(data.files.length)
       const filesToModify = new Set([])
       for (let n = 0; n < numberOfFilesToModify; n++) {
-        filesToModify.add(getRandomInt(10))
+        filesToModify.add(getRandomInt(data.files.length) - 1)
       }
-      console.log(filesToModify)
       filesToModify.forEach(file => {
         data.files[file] = modifyFile(data.files[file])
       })
@@ -111,18 +126,34 @@ const generateData = config => {
   return data
 }
 
+// Generate a dummy git repository.
 const generateRepo = async config => {
+  const print = new Print({ level: config.logLevel || 'info' })
+
+  // Generate the dummy commit data.
   const data = generateData(config)
+  print.debug('Data', { ...data, commits: '...', files: '...'  })
 
-  data.commits.forEach(async commit => {
-    commit.files.forEach(file => {
-      fs.writeFile(file.filename, file.source)
-    })
+  // Make the directory if it doesn't exist and initialize the git repository.
+  await execa('mkdir', ['-p', data.dir], { stdio })
+  await execa('git', ['init'], { cwd: data.dir, stdio })
 
-    await execa('git', ['add', '.'])
 
-    await execa('echo', [])
-  })
+  for (const commit of data.commits) {
+    // Write the files contained in the commit to the file system.
+    await Promise.all(commit.files.map(async file => {
+      await fs.writeFile(path.join(data.dir, file.filename), file.source)
+    }))
+
+    // Stage all the file changes.
+    await execa('git', ['add', '.'], { cwd: data.dir, stdio })
+
+    // Commit all the file changes.
+    const input = `${commit.subject}${commit.body ? `\n\n${commit.body}` : ''}`
+    const options = { input, cwd: data.dir, stderr: 'inherit' }
+    const author = `--author="${commit.author.name} <${commit.author.email}>"`
+    await execa('git', ['commit', author, '-F', '-'], options)
+  }
 
   return data
 }

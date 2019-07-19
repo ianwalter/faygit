@@ -1,7 +1,28 @@
 {
+  "name": "@ianwalter/faygit",
+  "description": "Generate a mock git repository: faygit til you make it!",
+  "version": "0.0.0",
+  "author": "Ian Walter <public@iankwalter.com> (https://iankwalter.com)",
+  "license": "SEE LICENSE IN LICENSE",
+  "bin": {
+    "faygit": "cli.js"
+  },
+  "main": "index.js",
   "scripts": {
     "faygit": "./cli.js"
   },
+  "files": [
+    "cli.js",
+    "index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianwalter/faygit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ianwalter/faygit/issues"
+  },
+  "homepage": "https://github.com/ianwalter/faygit#readme",
   "dependencies": {
     "@ianwalter/cli": "^1.2.0",
     "@ianwalter/print": "^3.0.1",
@@ -9,5 +30,22 @@
     "common-tags": "^1.8.0",
     "execa": "^2.0.3",
     "faker": "^4.1.0"
+  },
+  "devDependencies": {
+    "@ianwalter/bff": "^6.4.0",
+    "@ianwalter/eslint-config": "^2.1.1",
+    "@ianwalter/release": "^1.1.8",
+    "@ianwalter/renovate-config": "^1.1.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@ianwalter"
+    ]
+  },
+  "renovate": {
+    "extends": [
+      "@ianwalter"
+    ]
   }
 }

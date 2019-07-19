@@ -2,12 +2,15 @@
 
 const cli = require('@ianwalter/cli')
 const { print } = require('@ianwalter/print')
-const { generateData } = require('.')
+const { oneLine } = require('common-tags')
+const { generateRepo } = require('.')
 
 async function run () {
   const { _: [dir], $package, ...config  } = cli({ name: 'faygit' })
-  const data = generateData({ dir, ...config })
-  print.success(`Created a git repository at ${data.dir}`, data)
+  const { numberOfCommits } = await generateRepo({ dir, ...config })
+  print.success(oneLine`
+    Added ${numberOfCommits} commit${numberOfCommits > 1 ? 's' : '' }!
+  `)
 }
 
 run().catch(err => print.error(err))
