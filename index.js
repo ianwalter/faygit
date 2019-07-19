@@ -5,6 +5,7 @@ const { html } = require('common-tags')
 const cheerio = require('cheerio')
 const execa = require('execa')
 const { Print } = require('@ianwalter/print')
+const { subDays, addDays } = require('date-fns')
 
 const stdio = 'inherit'
 
@@ -51,7 +52,6 @@ const generateFile = () => {
             `) && acc,
     ''
   )}
-
         </body>
       </html>
     `
@@ -76,6 +76,7 @@ const generateData = config => {
     numberOfAuthors: getRandomInt(9),
     numberOfFiles: getRandomInt(10),
     numberOfCommits: getRandomInt(100),
+    numberOfDays: getRandomInt(30),
     ...config,
     dir: path.resolve(config.dir || '.')
   }
@@ -94,9 +95,24 @@ const generateData = config => {
     })
   }
 
+  // Make sure there aren't more days than there are commits.
+  data.numberOfDays = data.numberOfDays > data.numberOfCommits
+    ? data.numberOfCommits
+    : data.numberOfDays
+
   // Generate the dummy commits.
   const numberOfCommitsNeeded = data.numberOfCommits - data.commits.length
+  const numberOfCommitsADay = Math.floor(
+    data.numberOfCommits / data.numberOfDays
+  )
+  const endDate = new Date()
+  let commitDate = subDays(endDate, data.numberOfDays)
   for (let i = 0; i < numberOfCommitsNeeded; i++) {
+    //
+    if (i % numberOfCommitsADay === 0) {
+      commitDate = addDays(commitDate, 1)
+    }
+
     if (data.files.length < data.numberOfFiles) {
       // Generate new files to be added to the repository.
       const numberOfFiles = getRandomInt(2)
@@ -119,7 +135,8 @@ const generateData = config => {
       subject: faker.random.words(),
       ...getRandomInt(10) === 5 ? { body: faker.lorem.sentences() } : {},
       files: data.files.slice(),
-      author: data.authors[getRandomInt(data.numberOfAuthors) - 1]
+      author: data.authors[getRandomInt(data.numberOfAuthors) - 1],
+      date: i === (numberOfCommitsNeeded - 1) ? endDate : commitDate
     })
   }
 
@@ -135,7 +152,9 @@ const generateRepo = async config => {
   print.debug('Data', { ...data, commits: '...', files: '...' })
 
   // Make the directory if it doesn't exist and initialize the git repository.
-  await execa('mkdir', ['-p', data.dir], { stdio })
+  if (data.dir !== process.cwd()) {
+    await execa('mkdir', ['-p', data.dir], { stdio })
+  }
   await execa('git', ['init'], { cwd: data.dir, stdio })
 
   for (const commit of data.commits) {
@@ -151,7 +170,8 @@ const generateRepo = async config => {
     const input = `${commit.subject}${commit.body ? `\n\n${commit.body}` : ''}`
     const options = { input, cwd: data.dir, stderr: 'inherit' }
     const author = `--author="${commit.author.name} <${commit.author.email}>"`
-    await execa('git', ['commit', author, '-F', '-'], options)
+    const date = `--date="${commit.date}"`
+    await execa('git', ['commit', author, date, '-F', '-'], options)
   }
 
   return data
