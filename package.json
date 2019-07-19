@@ -1,7 +1,7 @@
 {
   "name": "@ianwalter/faygit",
   "description": "Generate a mock git repository: faygit til you make it!",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Ian Walter <public@iankwalter.com> (https://iankwalter.com)",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
