@@ -39,7 +39,7 @@
     "cheerio": "^1.0.0-rc.3",
     "common-tags": "^1.8.0",
     "date-fns": "^2.2.1",
-    "execa": "^2.0.4",
+    "execa": "^2.1.0",
     "faker": "^4.1.0"
   },
   "devDependencies": {
