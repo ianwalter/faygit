@@ -1,11 +1,12 @@
 const path = require('path')
 const { promises: fs } = require('fs')
-const faker = require('faker')
+const casual = require('casual')
 const { html } = require('common-tags')
 const cheerio = require('cheerio')
 const execa = require('execa')
 const { Print } = require('@ianwalter/print')
 const { subDays, addDays } = require('date-fns')
+const { utcToZonedTime } = require('date-fns-tz')
 
 const stdio = 'inherit'
 
@@ -16,20 +17,20 @@ const getRandomInt = (max, min = 1) => Math.max(
 
 // Generate an HTML file.
 const generateFile = () => {
-  // Use some random words for the page title and h1.
-  const heading = faker.random.words()
+  // Use a random title for the page title and h1.
+  const heading = casual.title
 
   // Generate the paragraphs that will go into the HTML body.
   const paragraphs = []
   for (let i = 0; i < getRandomInt(5); i++) {
     paragraphs.push({
-      heading: faker.random.words(),
-      body: faker.lorem.paragraph()
+      heading: casual.title,
+      body: casual.text
     })
   }
 
   return {
-    filename: `${faker.random.word().replace(' ', '')}.html`,
+    filename: `${casual.word}.html`,
     source: html`
       <html>
         <head>
@@ -63,7 +64,7 @@ const modifyFile = file => {
   const $ = cheerio.load(file.source)
   const paragraphs = $('p')
   const index = getRandomInt(paragraphs.length) - 1
-  $(paragraphs[index]).text(faker.lorem.paragraph())
+  $(paragraphs[index]).text(casual.text)
   return { ...file, source: $.html() }
 }
 
@@ -89,10 +90,7 @@ const generateData = config => {
   // Generate the dummy commit authors.
   const numberOfAuthorsNeeded = data.numberOfAuthors - data.authors.length
   for (let i = 0; i < numberOfAuthorsNeeded; i++) {
-    data.authors.push({
-      name: faker.name.findName(),
-      email: faker.internet.email()
-    })
+    data.authors.push({ name: casual.full_name, email: casual.email })
   }
 
   // Make sure there aren't more days than there are commits.
@@ -105,11 +103,11 @@ const generateData = config => {
   const numberOfCommitsADay = Math.floor(
     data.numberOfCommits / data.numberOfDays
   )
-  const endDate = new Date()
+  const endDate = utcToZonedTime(subDays(new Date(), 1), casual.timezone)
   let commitDate = subDays(endDate, data.numberOfDays)
   for (let i = 0; i < numberOfCommitsNeeded; i++) {
     //
-    if (i % numberOfCommitsADay === 0) {
+    if (i && i % numberOfCommitsADay === 0) {
       commitDate = addDays(commitDate, 1)
     }
 
@@ -132,8 +130,8 @@ const generateData = config => {
     }
 
     data.commits.push({
-      subject: faker.random.words(),
-      ...getRandomInt(10) === 5 ? { body: faker.lorem.sentences() } : {},
+      subject: casual.title,
+      ...getRandomInt(10) === 5 ? { body: casual.description } : {},
       files: data.files.slice(),
       author: data.authors[getRandomInt(data.numberOfAuthors) - 1],
       date: i === (numberOfCommitsNeeded - 1) ? endDate : commitDate
@@ -170,8 +168,14 @@ const generateRepo = async config => {
     const input = `${commit.subject}${commit.body ? `\n\n${commit.body}` : ''}`
     const options = { input, cwd: data.dir, stderr: 'inherit' }
     const author = `--author="${commit.author.name} <${commit.author.email}>"`
-    const date = `--date="${commit.date}"`
-    await execa('git', ['commit', author, date, '-F', '-'], options)
+    const date = `--date="${commit.date.toISOString()}"`
+    const userName = `user.name="${commit.author.name}"`
+    const userEmail = `user.email="${commit.author.email}"`
+    await execa(
+      'git',
+      ['-c', userName, '-c', userEmail, 'commit', author, date, '-F', '-'],
+      options
+    )
   }
 
   return data
