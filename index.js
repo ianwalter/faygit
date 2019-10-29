@@ -1,6 +1,6 @@
 const path = require('path')
 const { promises: fs } = require('fs')
-const faker = require('faker')
+const casual = require('casual')
 const { html } = require('common-tags')
 const cheerio = require('cheerio')
 const execa = require('execa')
@@ -16,20 +16,20 @@ const getRandomInt = (max, min = 1) => Math.max(
 
 // Generate an HTML file.
 const generateFile = () => {
-  // Use some random words for the page title and h1.
-  const heading = faker.random.words()
+  // Use a random title for the page title and h1.
+  const heading = casual.title
 
   // Generate the paragraphs that will go into the HTML body.
   const paragraphs = []
   for (let i = 0; i < getRandomInt(5); i++) {
     paragraphs.push({
-      heading: faker.random.words(),
-      body: faker.lorem.paragraph()
+      heading: casual.title,
+      body: casual.text
     })
   }
 
   return {
-    filename: `${faker.random.word().replace(' ', '')}.html`,
+    filename: `${casual.word}.html`,
     source: html`
       <html>
         <head>
@@ -63,7 +63,7 @@ const modifyFile = file => {
   const $ = cheerio.load(file.source)
   const paragraphs = $('p')
   const index = getRandomInt(paragraphs.length) - 1
-  $(paragraphs[index]).text(faker.lorem.paragraph())
+  $(paragraphs[index]).text(casual.text)
   return { ...file, source: $.html() }
 }
 
@@ -89,10 +89,7 @@ const generateData = config => {
   // Generate the dummy commit authors.
   const numberOfAuthorsNeeded = data.numberOfAuthors - data.authors.length
   for (let i = 0; i < numberOfAuthorsNeeded; i++) {
-    data.authors.push({
-      name: faker.name.findName(),
-      email: faker.internet.email()
-    })
+    data.authors.push({ name: casual.full_name, email: casual.email })
   }
 
   // Make sure there aren't more days than there are commits.
@@ -132,8 +129,8 @@ const generateData = config => {
     }
 
     data.commits.push({
-      subject: faker.random.words(),
-      ...getRandomInt(10) === 5 ? { body: faker.lorem.sentences() } : {},
+      subject: casual.title,
+      ...getRandomInt(10) === 5 ? { body: casual.description } : {},
       files: data.files.slice(),
       author: data.authors[getRandomInt(data.numberOfAuthors) - 1],
       date: i === (numberOfCommitsNeeded - 1) ? endDate : commitDate
