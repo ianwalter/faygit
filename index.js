@@ -103,11 +103,12 @@ const generateData = config => {
   const numberOfCommitsADay = Math.floor(
     data.numberOfCommits / data.numberOfDays
   )
-  const endDate = utcToZonedTime(new Date(), casual.timezone)
+  const endDate = utcToZonedTime(subDays(new Date(), 1), casual.timezone)
   let commitDate = subDays(endDate, data.numberOfDays)
+  console.log(numberOfCommitsADay)
   for (let i = 0; i < numberOfCommitsNeeded; i++) {
     //
-    if (i % numberOfCommitsADay === 0) {
+    if (i && i % numberOfCommitsADay === 0) {
       commitDate = addDays(commitDate, 1)
     }
 
@@ -168,7 +169,7 @@ const generateRepo = async config => {
     const input = `${commit.subject}${commit.body ? `\n\n${commit.body}` : ''}`
     const options = { input, cwd: data.dir, stderr: 'inherit' }
     const author = `--author="${commit.author.name} <${commit.author.email}>"`
-    const date = `--date="${commit.date}"`
+    const date = `--date="${commit.date.toISOString()}"`
     await execa('git', ['commit', author, date, '-F', '-'], options)
   }
 
