@@ -169,7 +169,13 @@ const generateRepo = async config => {
     const options = { input, cwd: data.dir, stderr: 'inherit' }
     const author = `--author="${commit.author.name} <${commit.author.email}>"`
     const date = `--date="${commit.date.toISOString()}"`
-    await execa('git', ['commit', author, date, '-F', '-'], options)
+    const userName = `user.name="${commit.author.name}"`
+    const userEmail = `user.email="${commit.author.email}"`
+    await execa(
+      'git',
+      ['-c', userName, '-c', userEmail, 'commit', author, date, '-F', '-'],
+      options
+    )
   }
 
   return data
