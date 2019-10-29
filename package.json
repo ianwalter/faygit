@@ -2,7 +2,10 @@
   "name": "@ianwalter/faygit",
   "description": "Generate a mock git repository: faygit til you make it!",
   "version": "1.1.0",
-  "author": "Ian Walter <public@iankwalter.com> (https://iankwalter.com)",
+  "author": {
+    "name": "Ian Walter",
+    "url": "https://ianwalter.dev"
+  },
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
     "faygit": "cli.js"
