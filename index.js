@@ -6,6 +6,7 @@ const cheerio = require('cheerio')
 const execa = require('execa')
 const { Print } = require('@ianwalter/print')
 const { subDays, addDays } = require('date-fns')
+const { utcToZonedTime } = require('date-fns-tz')
 
 const stdio = 'inherit'
 
@@ -102,7 +103,7 @@ const generateData = config => {
   const numberOfCommitsADay = Math.floor(
     data.numberOfCommits / data.numberOfDays
   )
-  const endDate = new Date()
+  const endDate = utcToZonedTime(new Date(), casual.timezone)
   let commitDate = subDays(endDate, data.numberOfDays)
   for (let i = 0; i < numberOfCommitsNeeded; i++) {
     //
