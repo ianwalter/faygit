@@ -105,7 +105,6 @@ const generateData = config => {
   )
   const endDate = utcToZonedTime(subDays(new Date(), 1), casual.timezone)
   let commitDate = subDays(endDate, data.numberOfDays)
-  console.log(numberOfCommitsADay)
   for (let i = 0; i < numberOfCommitsNeeded; i++) {
     //
     if (i && i % numberOfCommitsADay === 0) {

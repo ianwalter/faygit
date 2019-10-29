@@ -28,7 +28,7 @@ async function run () {
   } else {
     const { numberOfCommits } = await generateRepo({ dir, ...config })
     print.success(oneLine`
-      Added ${numberOfCommits} commit${numberOfCommits > 1 ? 's' : ''}!
+      Added ${numberOfCommits} commit${numberOfCommits === 1 ? '' : 's'}!
     `)
   }
 }
