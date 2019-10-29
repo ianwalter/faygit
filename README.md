@@ -1,6 +1,9 @@
 # @ianwalter/faygit
 > Generate a mock git repository: faygit til you make it!
 
+[![npm page][npmImage]][npmUrl]
+[![CI][ciImage]][ciUrl]
+
 # Installation
 
 Globally:
@@ -27,8 +30,10 @@ Apache 2.0 with Commons Clause - See [LICENSE][licenseUrl]
 
 &nbsp;
 
-Created by [Ian Walter](https://iankwalter.com)
+Created by [Ian Walter](https://ianwalter.dev)
 
 [npmImage]: https://img.shields.io/npm/v/@ianwalter/faygit.svg
 [npmUrl]: https://www.npmjs.com/package/@ianwalter/faygit
+[ciImage]: https://github.com/ianwalter/faygit/workflows/CI/badge.svg
+[ciUrl]: https://github.com/ianwalter/faygit/actions
 [licenseUrl]: https://github.com/ianwalter/faygit/blob/master/LICENSE
