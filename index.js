@@ -1,7 +1,7 @@
 const path = require('path')
-const { promises: fs } = require('fs')
+const { existsSync: exists, promises: fs } = require('fs')
 const casual = require('casual')
-const { html } = require('common-tags')
+const { html, oneLine } = require('common-tags')
 const cheerio = require('cheerio')
 const execa = require('execa')
 const { Print } = require('@ianwalter/print')
@@ -145,6 +145,20 @@ const generateData = config => {
 const generateRepo = async config => {
   const print = new Print({ level: config.logLevel || 'info' })
 
+  // Handle existing git repositories.
+  if (exists(config.dir)) {
+    const opts = { cwd: config.dir, reject: false }
+    const result = await execa('git', ['status'], opts)
+    if (result.stdout && config.force) {
+      await execa('git', ['remote', 'remove', 'origin'], opts)
+    } else if (result.stdout) {
+      throw new Error(oneLine`
+        Git repository already exists at ${config.dir}. Use --force, -f flag to
+        re-initialize it.
+      `)
+    }
+  }
+
   // Generate the dummy commit data.
   const data = generateData(config)
   print.debug('Data', { ...data, commits: '...', files: '...' })
@@ -154,6 +168,10 @@ const generateRepo = async config => {
     await execa('mkdir', ['-p', data.dir], { stdio })
   }
   await execa('git', ['init'], { cwd: data.dir, stdio })
+
+  // Add a fake origin.
+  const origin = `git@github.com:ianwalter/${casual.word}.git`
+  await execa('git', ['remote', 'add', 'origin', origin], { cwd: data.dir })
 
   for (const commit of data.commits) {
     // Write the files contained in the commit to the file system.
