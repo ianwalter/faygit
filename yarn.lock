@@ -73,13 +73,13 @@
     getopts "^2.2.5"
     read-pkg-up "^6.0.0"
 
-"@ianwalter/cli@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@ianwalter/cli/-/cli-2.1.0.tgz#cc8e955886571760661af5bab8829a68e9973474"
-  integrity sha512-eyirwH2Mv4hENJZu4udFUM5ypQnJnUto0G9/L5fet0opH/7+d0Z6scHfsQ9X81iJ1rGB6/rOIBc1X4s3o1z94g==
+"@ianwalter/cli@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@ianwalter/cli/-/cli-2.2.1.tgz#dbc9fb6766b04c43801fffa5e5c403c31ff101f3"
+  integrity sha512-3fwe4Y4HEcmrCJxiSfK2zRY4kM1OnXQpbbbYXwOQMCll89ycnN5+LAnP15x1zno2Oe6vnIo3UC2BP+NupRsilQ==
   dependencies:
     "@ianwalter/merge" "^5.0.0"
-    "@ianwalter/print" "^3.8.0"
+    "@ianwalter/print" "^3.9.0"
     common-tags "^1.8.0"
     dot-prop "^5.2.0"
     getopts "^2.2.5"
@@ -171,6 +171,21 @@
     has-emoji "^1.1.0"
     marked "^0.7.0"
     marked-terminal "^3.3.0"
+
+"@ianwalter/print@^3.9.0":
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/@ianwalter/print/-/print-3.9.0.tgz#db84d5f0fdcd144b1647aded8d33e6fa615208b9"
+  integrity sha512-8qYgeHNrLYBQa8pDDffptX280JVaAgFjlQAPpf5HH471F/tTEjcKIKC7oTaB+V5BtjLGkh8qoJVon1WyhNFO0Q==
+  dependencies:
+    "@ianwalter/chromafi" "^1.0.1"
+    "@ianwalter/clone" "^4.1.0"
+    "@ianwalter/log" "^3.1.0"
+    chalk "^2.4.2"
+    has-ansi "^4.0.0"
+    has-emoji "^1.1.0"
+    marked "^0.7.0"
+    marked-terminal "^3.3.0"
+    strip-ansi "^6.0.0"
 
 "@ianwalter/release@^3.0.6":
   version "3.0.6"
@@ -392,6 +407,11 @@ ansi-regex@^4.0.0, ansi-regex@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-4.1.0.tgz#8b9f8f08cf1acb843756a839ca8c7e3168c51997"
   integrity sha512-1apePfXM1UOSqw0o9IiFAovVz9M5S1Dg+4TrDwfMewQ6p/rmMueb7tWZjQ1rx4Loy1ArBggoqGpfqqdI4rondg==
+
+ansi-regex@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-5.0.0.tgz#388539f55179bf39339c81af30a654d69f87cb75"
+  integrity sha512-bY6fj56OUQ0hU1KjFNDQuJFezqKdrAyFdIevADiqrWHwSlbmBNMHp5ak2f40Pm8JTFyM2mqxkG6ngkHO11f/lg==
 
 ansi-styles@^3.2.0, ansi-styles@^3.2.1:
   version "3.2.1"
@@ -3013,6 +3033,13 @@ strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
+
+strip-ansi@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.0.tgz#0b1571dd7669ccd4f3e06e14ef1eed26225ae532"
+  integrity sha512-AuvKTrTfQNYNIctbR1K/YGTR1756GycPsg7b9bdV9Duqur4gv6aKqHXah67Z8ImS7WEz5QVcOtlfW2rZEugt6w==
+  dependencies:
+    ansi-regex "^5.0.0"
 
 strip-bom@^3.0.0:
   version "3.0.0"
