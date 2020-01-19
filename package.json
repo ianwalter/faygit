@@ -37,7 +37,7 @@
     "commits"
   ],
   "dependencies": {
-    "@ianwalter/cli": "^2.1.0",
+    "@ianwalter/cli": "^2.2.1",
     "@ianwalter/print": "^3.8.0",
     "casual": "^1.6.2",
     "cheerio": "^1.0.0-rc.3",
